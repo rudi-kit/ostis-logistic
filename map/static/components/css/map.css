@@ -1,0 +1,16 @@
+.slider-selection {
+  background: transparent;
+}
+
+.question {
+  padding: 2px 5px;
+  cursor: pointer;
+}
+
+.question:hover {
+  background-color: #f5f5f5;
+}
+
+#map {
+  z-index: 0;
+}
