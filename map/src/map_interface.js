@@ -75,7 +75,8 @@ var MapInterface = React.createClass({displayName: "MapInterface",
               React.createElement(QuestionLine, {onChange: this.onAgentParamsChange, questions: this.props.questions})
             ), 
             React.createElement(Timeline, {onTimeChange: this.onAgentParamsChange}), 
-            this.createViewer()
+            this.createViewer(),
+            React.createElement(GeneratePath)
           )
         )
       )

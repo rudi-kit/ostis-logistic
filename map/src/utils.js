@@ -29,6 +29,30 @@ var MapUtils = {
     if (/^\([^)]+\);/.test(query)) return '[out:json];' + query + 'out body; >; out skel qt;';
     return '[out:json];(' + query + '); out body; >; out skel qt;';
   },
+  generateShortestPath: function(startPoint, arrayOfWaypoints) {
+    var finalPath = [startPoint];
+  
+    while (arrayOfWaypoints.length > 0) {
+      var minDistance = Number.MAX_VALUE;
+      var indexOfNearestElement = 0;
+
+      arrayOfWaypoints.forEach(function(waypoint, index) {
+        var distance = startPoint.distanceTo(waypoint);
+
+        if (minDistance > distance) {
+          minDistance = distance;
+          indexOfNearestElement = index;
+        }
+      });
+
+      var nextPoint = arrayOfWaypoints[indexOfNearestElement];
+      finalPath.push(nextPoint);
+      arrayOfWaypoints.splice(indexOfNearestElement, 1);
+      startPoint = nextPoint;
+    };
+
+    return finalPath;
+  },
   empty: function(geojson) {
     return !geojson || !geojson.features || !geojson.features.length;
   },

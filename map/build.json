@@ -7,9 +7,10 @@
 	"src/list.js",
 	"src/map.js",
 	"src/map_interface.js",
+	"src/generate_path.js",
 	"src/question_line.js",
 	"src/timeline.js",
-	"src/utils.js"    
+	"src/utils.js"   
         ],
 	
 	"component": "src/map_component.js",

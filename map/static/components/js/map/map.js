@@ -165,6 +165,11 @@ var Map = React.createClass({displayName: "Map",
     onMapClick: React.PropTypes.func
   },
 
+  renderPath: function(pathType) {
+    this.clearPath();
+    this.addPathToMap(pathType);
+  },
+
   initCursorListener: function() {
     document.body.addEventListener('keydown', (event) => {
       if (event.ctrlKey)
@@ -198,6 +203,14 @@ var Map = React.createClass({displayName: "Map",
       this.map.removeLayer(this.markers);
   },
 
+  clearPath: function() {
+    if (this.control)
+      this.map.removeControl(this.control);
+    if (this.userLocationMarker) {
+      this.map.removeLayer(this.userLocationMarker);
+    }
+  },
+
   addMarkersToMap: function() {
     var markers = [];
     var onMarkerClick = this.props.onMarkerClick;
@@ -211,6 +224,59 @@ var Map = React.createClass({displayName: "Map",
       this.markers = L.featureGroup(markers); 
       this.markers.addTo(this.map);
       this.map.fitBounds(this.markers.getBounds());
+    }
+  },
+
+  addPathToMap: function(pathType) {
+    var self = this;
+
+    navigator.geolocation.getCurrentPosition(function(userPosition) {
+      var startPoint = L.latLng(userPosition.coords.latitude, userPosition.coords.longitude);
+      var waypoints = [];
+      self.props.objects.forEach(function(object) {
+          if (!MapUtils.empty(object.geojson)) {
+            var objectCoordinates = object.geojson.features[0].geometry.coordinates;
+            objectCoordinates = objectCoordinates[0][0] || objectCoordinates;
+            waypoints.push(L.latLng(objectCoordinates[1], objectCoordinates[0]));
+          }
+      });
+
+      self.control = L.Routing.control({
+        waypoints: MapUtils.generateShortestPath(startPoint, waypoints),
+        router: L.Routing.mapzen('mapzen-iuuXAyV', {costing: pathType}),
+        formatter: new L.Routing.mapzenFormatter(),
+        summaryTemplate:'<div class="start">{name}</div><div class="info {costing}">{distance}, {time}</div>',
+        showAlternatives: false,
+        routeWhileDragging: false,
+        show: false,
+        lineOptions: {
+          styles: getLineStyleByType(pathType)
+        },
+        createMarker: function() { return null; }
+      }).addTo(self.map);
+
+      self.userLocationMarker = L.marker([startPoint.lat, startPoint.lng]).addTo(self.map);
+      self.userLocationMarker.bindPopup("<b>Вы здесь</b>").openPopup();
+      self.map.setView([startPoint.lat, startPoint.lng], 14);
+    }, function(failure) {
+      alert("Нет доступа к вашему местоложению" + failure);
+    });
+
+    var getLineStyleByType = function(pathType) {
+      var lineMainColor;
+
+      switch(pathType) {
+        case "auto":
+          lineMainColor = "#ff2f00";
+          break;
+        case "bicycle":
+          lineMainColor = "#7fff0b";
+          break;
+        default: 
+          lineMainColor = "#0089ff";
+      }
+      
+      return [{color: 'black', opacity: 0.15, weight: 10}, {color: 'black', opacity: 0.8, weight: 7}, {color: lineMainColor, opacity: 1, weight: 5}];
     }
   },
 
@@ -229,12 +295,20 @@ var Map = React.createClass({displayName: "Map",
     this.setInitialView();
     this.fixZoomControls();
     this.initCursorListener();
+
+    $(MapState).on('generatePath', function(e){
+      this.renderPath(e.pathType);
+    }.bind(this));
   },
 
   componentDidUpdate: function() {
     this.clearMap();
     this.addMarkersToMap();
     this.setCenter();
+  },
+
+  componentWillUnmount: function () {
+    $(MapState).off('generatePath');
   },
 
   render: function() {
@@ -323,7 +397,58 @@ var MapInterface = React.createClass({displayName: "MapInterface",
               React.createElement(QuestionLine, {onChange: this.onAgentParamsChange, questions: this.props.questions})
             ), 
             React.createElement(Timeline, {onTimeChange: this.onAgentParamsChange}), 
-            this.createViewer()
+            this.createViewer(),
+            React.createElement(GeneratePath)
+          )
+        )
+      )
+    );
+  }
+});
+
+
+/* --- src/generate_path.js --- */
+var MapState = {};
+
+var GeneratePath = React.createClass({displayName: "GeneratePath",
+  componentDidMount: function() {
+    this.setState({pathType: "pedestrian"});
+  },
+
+  generatePath: function() {
+    $(MapState).trigger({
+      type:"generatePath",
+      pathType: this.state.pathType
+    });
+  },
+
+  onPathTypeChange: function(context) {
+    var pathType = context.target.value;
+    this.setState({pathType: pathType});
+  },
+
+  render: function() {
+    return (
+      React.createElement("div", {className: "form-group row", style: {margin: "10px"}},
+        React.createElement("a", {href: "#", style: {fontSize: "16px"}, onClick: this.generatePath}, "Проложить маршрут"), 
+        React.createElement("div", {className: "form-group"},
+          React.createElement("div", {style: {fontSize: "16px"}},
+            React.createElement("label", {style: {cursor: "pointer", fontWeight: 400, margin: 0}}, 
+              React.createElement("input", {type: "radio", name: "pathTypes", value: "pedestrian", style: {marginRight: "5px"}, onChange: this.onPathTypeChange, defaultChecked: true}),
+              "Пешком"
+            ),
+          ),
+          React.createElement("div", {style: {fontSize: "16px"}},
+            React.createElement("label", {style: {cursor: "pointer", fontWeight: 400, margin: 0}}, 
+              React.createElement("input", {type: "radio", name: "pathTypes", value: "auto", style: {marginRight: "5px"}, onChange: this.onPathTypeChange}),
+              "На машине"
+            ),
+          ),
+          React.createElement("div", {style: {fontSize: "16px"}},
+            React.createElement("label", {style: {cursor: "pointer", fontWeight: 400, margin: 0}}, 
+              React.createElement("input", {type: "radio", name: "pathTypes", value: "bicycle", style: {marginRight: "5px"}, onChange: this.onPathTypeChange}),
+              "На велосипеде"
+            )
           )
         )
       )
@@ -463,6 +588,30 @@ var MapUtils = {
     if (/\[out:json\];/.test(query) || /out skel qt/.test(query)) return query;
     if (/^\([^)]+\);/.test(query)) return '[out:json];' + query + 'out body; >; out skel qt;';
     return '[out:json];(' + query + '); out body; >; out skel qt;';
+  },
+  generateShortestPath: function(startPoint, arrayOfWaypoints) {
+    var finalPath = [startPoint];
+  
+    while (arrayOfWaypoints.length > 0) {
+      var minDistance = Number.MAX_VALUE;
+      var indexOfNearestElement = 0;
+
+      arrayOfWaypoints.forEach(function(waypoint, index) {
+        var distance = startPoint.distanceTo(waypoint);
+
+        if (minDistance > distance) {
+          minDistance = distance;
+          indexOfNearestElement = index;
+        }
+      });
+
+      var nextPoint = arrayOfWaypoints[indexOfNearestElement];
+      finalPath.push(nextPoint);
+      arrayOfWaypoints.splice(indexOfNearestElement, 1);
+      startPoint = nextPoint;
+    };
+
+    return finalPath;
   },
   empty: function(geojson) {
     return !geojson || !geojson.features || !geojson.features.length;

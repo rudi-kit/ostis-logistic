@@ -6,6 +6,11 @@ var Map = React.createClass({displayName: "Map",
     onMapClick: React.PropTypes.func
   },
 
+  renderPath: function(pathType) {
+    this.clearPath();
+    this.addPathToMap(pathType);
+  },
+
   initCursorListener: function() {
     document.body.addEventListener('keydown', (event) => {
       if (event.ctrlKey)
@@ -39,6 +44,14 @@ var Map = React.createClass({displayName: "Map",
       this.map.removeLayer(this.markers);
   },
 
+  clearPath: function() {
+    if (this.control)
+      this.map.removeControl(this.control);
+    if (this.userLocationMarker) {
+      this.map.removeLayer(this.userLocationMarker);
+    }
+  },
+
   addMarkersToMap: function() {
     var markers = [];
     var onMarkerClick = this.props.onMarkerClick;
@@ -52,6 +65,59 @@ var Map = React.createClass({displayName: "Map",
       this.markers = L.featureGroup(markers); 
       this.markers.addTo(this.map);
       this.map.fitBounds(this.markers.getBounds());
+    }
+  },
+
+  addPathToMap: function(pathType) {
+    var self = this;
+
+    navigator.geolocation.getCurrentPosition(function(userPosition) {
+      var startPoint = L.latLng(userPosition.coords.latitude, userPosition.coords.longitude);
+      var waypoints = [];
+      self.props.objects.forEach(function(object) {
+          if (!MapUtils.empty(object.geojson)) {
+            var objectCoordinates = object.geojson.features[0].geometry.coordinates;
+            objectCoordinates = objectCoordinates[0][0] || objectCoordinates;
+            waypoints.push(L.latLng(objectCoordinates[1], objectCoordinates[0]));
+          }
+      });
+
+      self.control = L.Routing.control({
+        waypoints: MapUtils.generateShortestPath(startPoint, waypoints),
+        router: L.Routing.mapzen('mapzen-iuuXAyV', {costing: pathType}),
+        formatter: new L.Routing.mapzenFormatter(),
+        summaryTemplate:'<div class="start">{name}</div><div class="info {costing}">{distance}, {time}</div>',
+        showAlternatives: false,
+        routeWhileDragging: false,
+        show: false,
+        lineOptions: {
+          styles: getLineStyleByType(pathType)
+        },
+        createMarker: function() { return null; }
+      }).addTo(self.map);
+
+      self.userLocationMarker = L.marker([startPoint.lat, startPoint.lng]).addTo(self.map);
+      self.userLocationMarker.bindPopup("<b>Вы здесь</b>").openPopup();
+      self.map.setView([startPoint.lat, startPoint.lng], 14);
+    }, function(failure) {
+      alert("Нет доступа к вашему местоложению" + failure);
+    });
+
+    var getLineStyleByType = function(pathType) {
+      var lineMainColor;
+
+      switch(pathType) {
+        case "auto":
+          lineMainColor = "#ff2f00";
+          break;
+        case "bicycle":
+          lineMainColor = "#7fff0b";
+          break;
+        default: 
+          lineMainColor = "#0089ff";
+      }
+      
+      return [{color: 'black', opacity: 0.15, weight: 10}, {color: 'black', opacity: 0.8, weight: 7}, {color: lineMainColor, opacity: 1, weight: 5}];
     }
   },
 
@@ -70,12 +136,20 @@ var Map = React.createClass({displayName: "Map",
     this.setInitialView();
     this.fixZoomControls();
     this.initCursorListener();
+
+    $(MapState).on('generatePath', function(e){
+      this.renderPath(e.pathType);
+    }.bind(this));
   },
 
   componentDidUpdate: function() {
     this.clearMap();
     this.addMarkersToMap();
     this.setCenter();
+  },
+
+  componentWillUnmount: function () {
+    $(MapState).off('generatePath');
   },
 
   render: function() {

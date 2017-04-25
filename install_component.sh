@@ -10,6 +10,9 @@ cat <<EOT >> ./common.html
 <script type="text/javascript" charset="utf-8" src="/static/common/react/react-dom.js"></script>
 <script type="text/javascript" charset="utf-8" src="/static/common/bootstrap-slider/js/bootstrap-slider.js"></script>
 <script type="text/javascript" charset="utf-8" src="/static/common/leaflet/js/leaflet.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://mapzen.com/js/mapzen.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.5/leaflet-routing-machine.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/common/mapzen/js/lrm-mapzen.js"></script>
 <script type="text/javascript" charset="utf-8" src="/static/common/react-autocomplete/react-autocomplete.js"></script>
 <script type="text/javascript" charset="utf-8" src="/static/common/osmtogeojson/osmtogeojson.js"></script>
 <script type="text/javascript" charset="utf-8" src="/static/common/fluxify/fluxify.js"></script>
@@ -17,6 +20,9 @@ cat <<EOT >> ./common.html
 <script type="text/javascript" charset="utf-8" src="/static/common/react-loader/react-loader.js"></script>
 
 <link rel="stylesheet" type="text/css" href="/static/common/leaflet/css/leaflet.css" />
+<link rel="stylesheet" type="text/css" href="/static/common/leaflet-routing-machine/css/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://mapzen.com/js/mapzen.css" />
+<link rel="stylesheet" type="text/css" href="/static/common/mapzen/css/lrm-mapzen.css" />
 <link rel="stylesheet" type="text/css" href="/static/common/bootstrap-slider/css/bootstrap-slider.css" />
 <link rel="stylesheet" type="text/css" href="/static/common/toast/jquery.toast.min.css" />
 EOT
