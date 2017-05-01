@@ -75,11 +75,15 @@ var Map = React.createClass({displayName: "Map",
       var startPoint = L.latLng(userPosition.coords.latitude, userPosition.coords.longitude);
       var waypoints = [];
       self.props.objects.forEach(function(object) {
-          if (!MapUtils.empty(object.geojson)) {
-            var objectCoordinates = object.geojson.features[0].geometry.coordinates;
-            objectCoordinates = objectCoordinates[0][0] || objectCoordinates;
+        if (!MapUtils.empty(object.geojson)) {
+          var objectCoordinates = object.geojson.features[0].geometry.coordinates;
+          objectCoordinates = objectCoordinates[0][0]  || (Array.isArray(objectCoordinates[0]) ? objectCoordinates[0] : objectCoordinates);
+          if (objectCoordinates.length === 2) {
             waypoints.push(L.latLng(objectCoordinates[1], objectCoordinates[0]));
+          } else {
+            console.log("ERROR: can't read coordinates properly for \"" + object.title + "\"");
           }
+        }
       });
 
       self.control = L.Routing.control({
@@ -94,13 +98,21 @@ var Map = React.createClass({displayName: "Map",
           styles: getLineStyleByType(pathType)
         },
         createMarker: function() { return null; }
-      }).addTo(self.map);
+      });
 
-      self.userLocationMarker = L.marker([startPoint.lat, startPoint.lng]).addTo(self.map);
-      self.userLocationMarker.bindPopup("<b>Вы здесь</b>").openPopup();
-      self.map.setView([startPoint.lat, startPoint.lng], 14);
+      self.control.on('routesfound', function(e) {
+        self.control.addTo(self.map);
+        self.userLocationMarker = L.marker([startPoint.lat, startPoint.lng]).addTo(self.map);
+        self.userLocationMarker.bindPopup("<b>Вы здесь</b>").openPopup();
+        self.map.setView([startPoint.lat, startPoint.lng], 14);
+      });
+
+      self.control.on('routingerror', function(e) {
+        alert("Что-то пошло не так: " + JSON.parse(e.error.message).error);
+      });
+
     }, function(failure) {
-      alert("Нет доступа к вашему местоложению" + failure);
+        alert("Нет доступа к вашему местоложению\n" + failure.message);
     });
 
     var getLineStyleByType = function(pathType) {
