@@ -134,7 +134,7 @@ var MapUtils = {
       }
     }
   },
-  extractor: function(arc) {
+  extractor: function(arc, contour) {
     var contour = MapStore.get().contour;
     return {
       extract: function() {
@@ -143,8 +143,8 @@ var MapUtils = {
           this.checkTerrainObject(nodes[1])
           .done(() => {
             this.extractIdentifier(nodes[1]);
-            this.extractDescription(nodes[1]);
-            this.extractImage(nodes[1]);
+            this.extractDescription(nodes[1], contour);
+            this.extractImage(nodes[1], contour);
             this.extractCoordinates(nodes[1]);
           })
         });
@@ -192,7 +192,7 @@ var MapUtils = {
           });
         });
       },
-      extractImage: function(object) {
+      extractImage: function(object, contour) {
         window.sctpClient.iterate_constr(
           SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_F,
                         [
@@ -224,12 +224,37 @@ var MapUtils = {
                           sc_type_arc_pos_const_perm,
                           MapKeynodes.get("rrel_example")
                         ], {"image": 2})
-        ).done(function(results) {            
-          var image = "api/link/content/?addr=" + results.get(0, "image");
-          fluxify.doAction('changeObject', {id: object, image: image});   
+        ).done(function(images) {
+          checkWhetherImageBelongsToContour(images);
         });
+
+        let setImage = function (images) {
+          let image = "api/link/content/?addr=" + images.get(0, "image");
+            fluxify.doAction('changeObject', {id: object, image: image});
+        };
+
+        let checkWhetherImageBelongsToContour = function (images, index = 0) {
+          window.sctpClient.iterate_constr(
+          SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_3F_A_F, [
+                  contour,
+                  sc_type_arc_pos_const_perm,
+                  images.get(index, "image")
+              ], {"image": 2}
+            )
+          )
+          .done((imageFromContour) => {
+            setImage(imageFromContour);
+          })
+          .fail(() => {
+            if (images && images.results && index < images.results.length) {
+              checkWhetherImageBelongsToContour(images, ++index);
+            } else {
+              setImage(images);
+            }
+          });
+        };
       },
-      extractDescription: function(object) {
+      extractDescription: function(object, contour) {
         window.sctpClient.iterate_constr(
           SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_5A_A_F_A_F,
                         [
@@ -267,12 +292,37 @@ var MapUtils = {
                           sc_type_arc_pos_const_perm,
                           "description"
                         ])
-        ).done(function(results) {            
-          window.sctpClient.get_link_content(results.get(0, "description"))
-          .done(function (description) {
-            fluxify.doAction('changeObject', {id: object, description: description});   
-          });
+        ).done(function(descriptions) {
+          checkWhetherDescriptionBelongsToContour(descriptions);
         });
+
+        let setDescription = function (descriptions) {
+          window.sctpClient.get_link_content(descriptions.get(0, "description"))
+                .done(function (description) {
+                    fluxify.doAction('changeObject', {id: object, description: description});
+                });
+        };
+
+        let checkWhetherDescriptionBelongsToContour = function (descriptions, index = 0) {
+          window.sctpClient.iterate_constr(
+          SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_3F_A_F, [
+                  contour,
+                  sc_type_arc_pos_const_perm,
+                  descriptions.get(index, "description")
+              ], {"description": 2}
+            )
+          )
+          .done((descriptionsFromContour) => {
+            setDescription(descriptionsFromContour);
+          })
+          .fail(() => {
+            if (descriptions && descriptions.results && index < descriptions.results.length) {
+              checkWhetherDescriptionBelongsToContour(descriptions, ++index);
+            } else {
+              setDescription(descriptions);
+            }
+          });
+        };
       },
       extractCoordinates: function(object) {
         var self = this;

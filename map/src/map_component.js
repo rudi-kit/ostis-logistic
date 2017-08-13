@@ -38,7 +38,7 @@ MapViewer.prototype.createStore = function() {
 
 MapViewer.prototype.eventStructUpdate = function(added, contour, arc) {
   fluxify.doAction('changeContour', contour);
-  if (added) MapUtils.extractor(arc).extract();
+  if (added) MapUtils.extractor(arc, contour).extract();
 };
 
 MapViewer.prototype.getQuestions = function() {
