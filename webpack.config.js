@@ -1,4 +1,4 @@
-var path = require("path")
+var path = require("path");
 module.exports = {
     entry: {
         app: ["./map/src/map_component.js"]
@@ -6,12 +6,13 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "build"),
         publicPath: "/assets/",
-        filename: "bundle.js"
+        filename: "bundle.js",
+        sourceMapFilename: "bundle.map"
     },
     devServer: {
         proxy: [
             {
-                context: ["/api", "/static","/"],
+                context: ["/api", "/static", "/"],
                 target: "http://localhost:8000",
                 secure: false
             },
@@ -23,5 +24,12 @@ module.exports = {
             }
 
         ]
-    }
+    },
+    module: {
+        loaders: [
+            {test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/},
+            {test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/}
+        ],
+    },
+    devtool: "cheap-eval-source-map"
 };

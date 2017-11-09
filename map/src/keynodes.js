@@ -1,6 +1,6 @@
-var MapKeynodes = {
+export const MapKeynodes = {
   
-}
+};
 
 MapKeynodes.IDENTIFIERS = [
   'nrel_main_idtf',

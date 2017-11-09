@@ -1,4 +1,6 @@
-MapStore = {
+import fluxify from "fluxify";
+
+export const MapStore = {
   get: function() {
     this.store = this.store || this.create();
     return this.store;
@@ -41,4 +43,4 @@ MapStore = {
       }
     });
   }
-}
+};

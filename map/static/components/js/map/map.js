@@ -1,7 +1,7 @@
 /* --- src/keynodes.js --- */
 var MapKeynodes = {
 
-}
+};
 
 MapKeynodes.IDENTIFIERS = [
     'nrel_main_idtf',
@@ -74,7 +74,7 @@ MapStore = {
             }
         });
     }
-}
+};
 
 /* --- src/article.js --- */
 var Article = React.createClass({displayName: "Article",
@@ -394,7 +394,7 @@ var MapInterface = React.createClass({displayName: "MapInterface",
 
     createViewer: function() {
         if (this.state.chosen)
-            return React.createElement(Article, {object: this.state.chosen, onListClick: this.onListClick})
+            return React.createElement(Article, {object: this.state.chosen, onListClick: this.onListClick});
         else
             return React.createElement(List, {objects: this.state.objects, onArticleClick: this.onClick})
     },
@@ -621,8 +621,7 @@ var MapUtils = {
             finalPath.push(nextPoint);
             arrayOfWaypoints.splice(indexOfNearestElement, 1);
             startPoint = nextPoint;
-        };
-
+        }
         return finalPath;
     },
     empty: function(geojson) {
@@ -871,7 +870,7 @@ var MapUtils = {
             },
         }
     }
-}
+};
 
 /* --- src/map_component.js --- */
 MapComponent = {
@@ -900,13 +899,13 @@ MapViewer.prototype.init = function() {
 
 MapViewer.prototype.initCallback = function() {
     this.sandbox.eventStructUpdate = $.proxy(this.eventStructUpdate, this);
-}
+};
 
 MapViewer.prototype.createReactComponent = function() {
     var store = this.createStore();
     var mapInterface = React.createElement(MapInterface, {store: store, questions: this.getQuestions()});
     ReactDOM.render(mapInterface, document.getElementById(this.sandbox.container));
-}
+};
 
 MapViewer.prototype.createStore = function() {
     return MapStore.get();
