@@ -4,9 +4,9 @@ module.exports = {
         app: ["./map/src/map_component.js"]
     },
     output: {
-        path: path.resolve(__dirname, "build"),
+        path: path.resolve(__dirname+"/map/static/components/js", "build"),
         publicPath: "/assets/",
-        filename: "bundle.js",
+        filename: "map.js",
         sourceMapFilename: "bundle.map"
     },
     devServer: {

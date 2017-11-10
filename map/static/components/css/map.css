@@ -18,7 +18,7 @@
 .car {
     width: 128px !important;
     height: 78px !important;
-    background-image: url("/cars.png");
+    background-image: url("/static/components/images/cars.png");
     background-repeat: no-repeat;
 }
 
