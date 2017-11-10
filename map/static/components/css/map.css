@@ -1,16 +1,30 @@
 .slider-selection {
-  background: transparent;
+    background: transparent;
 }
 
 .question {
-  padding: 2px 5px;
-  cursor: pointer;
+    padding: 2px 5px;
+    cursor: pointer;
 }
 
 .question:hover {
-  background-color: #f5f5f5;
+    background-color: #f5f5f5;
 }
 
 #map {
-  z-index: 0;
+    z-index: 0;
+}
+
+.car {
+    width: 128px !important;
+    height: 78px !important;
+    background-image: url("/cars.png");
+    background-repeat: no-repeat;
+}
+
+.car.error {
+    background-position-x: -140px;
+}
+
+.car.normal {
 }

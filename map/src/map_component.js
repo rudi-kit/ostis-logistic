@@ -1,10 +1,10 @@
 import {MapStore} from "./store.js"
+import {MapKeynodes} from "./keynodes"
 import {MapInterface} from "./jsx/map_interface.jsx"
 import fluxify from "fluxify";
 import ReactDOM from "react-dom"
 import React from "react"
-import {MapKeynodes} from "./keynodes"
-import {MapUtils} from "./utils"
+import {cars, cities} from "./data.js"
 
 const MapComponent = {
     ext_lang: 'openstreetmap_view',
@@ -25,8 +25,8 @@ MapViewer.prototype.init = function () {
     let self = this;
     MapKeynodes.init().done(function () {
         self.initCallback();
-        self.createReactComponent();
         self.sandbox.updateContent();
+        self.createReactComponent();
     });
 };
 
@@ -45,8 +45,8 @@ MapViewer.prototype.createStore = function () {
 };
 
 MapViewer.prototype.eventStructUpdate = function (added, contour, arc) {
-    fluxify.doAction('changeContour', contour);
-    if (added) MapUtils.extractor(arc, contour).extract();
+    // fluxify.doAction('changeContour', contour);
+    // if (added) MapUtils.extractor(arc, contour).extract();
 };
 
 MapViewer.prototype.getQuestions = function () {

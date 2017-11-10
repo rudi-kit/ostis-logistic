@@ -23,13 +23,16 @@ module.exports = {
                 ws: true
             }
 
-        ]
+        ],
+        inline: true,
+        hot: true
     },
     module: {
         loaders: [
             {test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/},
-            {test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/}
+            {test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/},
+            {test: /\.css$/, loader: 'css-loader', exclude: /node_modules/}
         ],
     },
-    devtool: "cheap-eval-source-map"
+    devtool: "cheap-eval-source-map",
 };

@@ -3,6 +3,9 @@ import PropTypes from "prop-types"
 import L from "leaflet"
 import {MapUtils} from "../utils"
 import React from "react"
+import _ from "underscore"
+import {cities} from "../data";
+import mapCss from "../../static/components/css/map.css"
 
 export const Map = createClass({
     propTypes: {
@@ -10,16 +13,6 @@ export const Map = createClass({
         chosen: PropTypes.object,
         onMarkerClick: PropTypes.func,
         onMapClick: PropTypes.func
-    },
-
-    initCursorListener: function () {
-        document.body.addEventListener('keydown', (event) => {
-            if (event.ctrlKey)
-                this.refs.map.style.cursor = "crosshair";
-        });
-        document.body.addEventListener('keyup', () => {
-            this.refs.map.style.cursor = "";
-        });
     },
 
     createMap: function () {
@@ -46,19 +39,11 @@ export const Map = createClass({
     },
 
     addMarkersToMap: function () {
-        var markers = [];
-        var onMarkerClick = this.props.onMarkerClick;
-        this.props.objects.map(function (object) {
-            if (!MapUtils.empty(object.geojson)) {
-                var marker = L.geoJSON(object.geojson).on('click', () => onMarkerClick(object));
-                markers.push(marker);
-            }
-        });
-        if (markers.length > 0) {
-            this.markers = L.featureGroup(markers);
-            this.markers.addTo(this.map);
-            this.map.fitBounds(this.markers.getBounds());
-        }
+        let notEmptyObjects = this.props.objects;
+        let markers = _.forEach(notEmptyObjects, (obj) => L.geoJson(obj.geojson));
+        markers = _.map(markers, marker => L.marker(marker.coordinates, marker));
+        let markersGroup = L.featureGroup(markers).addTo(this.map);
+        this.map.fitBounds(markersGroup.getBounds());
     },
 
     setInitialView: function () {
@@ -75,13 +60,14 @@ export const Map = createClass({
         this.bindMapClickAction();
         this.setInitialView();
         this.fixZoomControls();
-        this.initCursorListener();
+        this.addMarkersToMap();
     },
 
     componentDidUpdate: function () {
         this.clearMap();
         this.addMarkersToMap();
         this.setCenter();
+        this.addMarkersToMap();
     },
 
     render: function () {
