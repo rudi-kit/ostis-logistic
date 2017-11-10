@@ -1,6 +1,6 @@
 OSTIS_FOLDER=$1||".."
 
-npm i && webpack &&
+npm i && npm install &&
 
 cp ./openstreetmap_view.scs $OSTIS_FOLDER/kb/openstreetmap_view.scs
 cp -R ./map $OSTIS_FOLDER/sc-web/components
