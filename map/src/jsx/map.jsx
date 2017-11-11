@@ -7,70 +7,49 @@ import _ from "underscore"
 import {cities} from "../data";
 import mapCss from "../../static/components/css/map.css"
 
-export const Map = createClass({
-    propTypes: {
-        objects: PropTypes.array,
-        chosen: PropTypes.object,
-        onMarkerClick: PropTypes.func,
-        onMapClick: PropTypes.func
-    },
+export class Map extends React.Component {
+    static propTypes: {
+        objects: PropTypes.array.isRequired,
+    };
 
-    createMap: function () {
+    static defaultProps: {
+        objects: []
+    };
+
+    createMap() {
         this.map = new L.Map('map', {zoomControl: false});
         var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 17});
         this.map.addLayer(osm);
-    },
+    }
 
-    bindMapClickAction: function () {
-        this.map.on('click', (event) => {
-            if (event.originalEvent.ctrlKey)
-                this.props.onMapClick(event.latlng)
-        });
-    },
+    _bindMarkersToContextMenu(markers, sc_addrs) {
+        const marker2address = _.zip(markers, sc_addrs);
+        const filtered = _.filter(marker2address, _.property(1))
+        filtered.forEach(([marker, scAddress]) => marker.getElement().setAttribute("sc_addr", scAddress))
+    }
 
-    fixZoomControls: function () {
-        new L.control.zoom({position: 'bottomright'}).addTo(this.map);
-    },
-
-    clearMap: function () {
-        if (this.markers)
-            this.map.removeLayer(this.markers);
-    },
-
-    addMarkersToMap: function () {
+    addMarkersToMap() {
         let notEmptyObjects = this.props.objects;
         let markers = _.forEach(notEmptyObjects, (obj) => L.geoJson(obj.geojson));
         markers = _.map(markers, marker => L.marker(marker.coordinates, marker));
-        let markersGroup = L.featureGroup(markers).addTo(this.map);
-        this.map.fitBounds(markersGroup.getBounds());
-    },
+        let markersGroup = L.featureGroup(markers)
+            .on("add", () => this._bindMarkersToContextMenu(markers, notEmptyObjects.map(_.property("scAddress"))))
+            .addTo(this.map);
+        markers.length && this.map.fitBounds(markersGroup.getBounds());
+    }
 
-    setInitialView: function () {
-        this.map.setView([53, 27], 1);
-    },
 
-    setCenter: function () {
-        if (this.props.chosen && !MapUtils.empty(this.props.chosen.geojson))
-            this.map.fitBounds(L.geoJSON(this.props.chosen.geojson).getBounds());
-    },
-
-    componentDidMount: function () {
+    componentDidMount() {
         this.createMap();
-        this.bindMapClickAction();
-        this.setInitialView();
-        this.fixZoomControls();
         this.addMarkersToMap();
-    },
+    }
 
-    componentDidUpdate: function () {
-        this.clearMap();
+    componentDidUpdate() {
         this.addMarkersToMap();
-        this.setCenter();
-        this.addMarkersToMap();
-    },
+    }
 
-    render: function () {
+    render() {
         return (
             <div id="map" ref="map" style={{
                 position: "absolute",
@@ -82,4 +61,4 @@ export const Map = createClass({
             }}/>
         );
     }
-});
+}

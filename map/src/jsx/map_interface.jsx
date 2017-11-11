@@ -6,39 +6,47 @@ import Loader from "react-loader"
 import {Map} from "./map.jsx"
 import {cars, cities} from "../data";
 
-export const MapInterface = createClass({
+export class MapInterface extends React.Component {
     propTypes: {
         questions: PropTypes.array,
         store: PropTypes.object
-    },
+    };
 
-    componentDidMount () {
+    constructor() {
+        super();
+        this.state = {
+            objects: []
+        }
+
+    }
+
+    componentDidMount() {
         this.initObjectsListener();
         this.initLoadedListener();
         fluxify.doAction('initObjects')
-    },
+    }
 
-    cleanModel () {
+    cleanModel() {
         fluxify.doAction('clean');
-    },
+    }
 
-    initObjectsListener: function () {
+    initObjectsListener() {
         this.props.store.on('change:objects', (objects) => {
             this.setState({objects: Object.values(objects)});
         });
-    },
+    }
 
-    initLoadedListener: function () {
+    initLoadedListener() {
         this.props.store.on('change:loaded', (loaded) => {
             this.setState({loaded: loaded});
         });
-    },
+    }
 
-    render: function () {
+    render() {
         return (
-
-            <Map objects={[...cars, ...cities]} onMarkerClick={this.onClick}
+            <Map objects={this.state.objects} onMarkerClick={this.onClick}
                  onMapClick={this.onMapClick}/>
         );
     }
-});
+
+}

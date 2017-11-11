@@ -1,10 +1,11 @@
+#!/usr/bin/env bash
 OSTIS_FOLDER=$1||".."
 
-npm i && npm install &&
+node ./node_modules/webpack/bin/webpack.js &&
 
-cp ./openstreetmap_view.scs $OSTIS_FOLDER/kb/openstreetmap_view.scs
-cp -R ./map $OSTIS_FOLDER/sc-web/components
-cp -R ./common $OSTIS_FOLDER/sc-web/client/static
+cp -rv ./kb/* $OSTIS_FOLDER/kb/
+cp -rv ./map/static/ $OSTIS_FOLDER/sc-web/client/
+cp -rv ./common $OSTIS_FOLDER/sc-web/client/static
 cd $OSTIS_FOLDER/sc-web/client/templates
 
 cat <<EOT >> ./common.html
