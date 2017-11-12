@@ -7,19 +7,19 @@ export const MapUtils = {
     extractCars: function () {
         return queryForCars()
             .catch((err) => {
-                throw new Error("cars", err)
+                console.error("cars", err);
             })
     },
     extractFactories: function () {
         return queryForFactories()
             .catch((err) => {
-                throw new Error("factories", err)
+                console.error("factories", err);
             })
     },
     extractFarms: function () {
         return queryForFarms()
             .catch((err) => {
-                throw new Error("farms", err)
+                console.error("farms", err);
             })
     }
 };

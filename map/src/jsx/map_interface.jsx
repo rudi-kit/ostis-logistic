@@ -1,10 +1,7 @@
 import React from "react"
 import fluxify from "fluxify";
 import PropTypes from "prop-types"
-import createClass from "create-react-class"
-import Loader from "react-loader"
 import {Map} from "./map.jsx"
-import {cars, cities} from "../data";
 
 export class MapInterface extends React.Component {
     propTypes: {

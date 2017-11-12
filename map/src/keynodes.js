@@ -5,7 +5,9 @@ MapKeynodes.IDENTIFIERS = [
     'nrel_inclusion',
     'nrel_ltd',
     'factory',
-    'farm'
+    'farm',
+    'rrel_participant',
+    'emergency_three'
 ];
 
 MapKeynodes.init = function () {
