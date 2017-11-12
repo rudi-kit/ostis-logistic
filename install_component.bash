@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-OSTIS_FOLDER=$1||".."
+OSTIS_FOLDER=$1
 
 node ./node_modules/webpack/bin/webpack.js &&
 
