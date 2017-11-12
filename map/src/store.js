@@ -1,6 +1,11 @@
 import fluxify from "fluxify";
 import {MapUtils} from "./utils"
-import {cars, cities} from "./data";
+import update from "react-addons-update"
+import _ from "underscore"
+
+function pushObjects(updater, objects) {
+    return updater.set(update(updater.props, {objects: {$push: objects}}));
+}
 
 export const MapStore = {
     get: function () {
@@ -12,15 +17,15 @@ export const MapStore = {
         return fluxify.createStore({
             id: "MapStore",
             initialState: {
-                objects: {},
-                chosen: null,
-                contour: null,
-                loaded: true
+                objects: []
             },
             actionCallbacks: {
-                initObjects: function (updater, coordinates) {
-                    MapUtils.extractCars().then(cars => (console.log(cars),cars))
-                        .then((cars) => updater.set({objects: cars})).catch(console.error)
+                initObjects: function (updater) {
+                    Promise.all([MapUtils.extractCars(), MapUtils.extractFactories(), MapUtils.extractFarms()])
+                        .then(_.flatten)
+                        .then(objects => (console.log(objects), objects))
+                        .then(pushObjects.bind(null, updater))
+                        .catch(console.error);
                 }
             }
         });

@@ -4,15 +4,8 @@ MapKeynodes.IDENTIFIERS = [
     'freight_transport',
     'nrel_inclusion',
     'nrel_ltd',
-    'nrel_main_idtf',
-    'lang_ru',
-    'rrel_key_sc_element',
-    'sc_illustration',
-    'sc_definition',
-    'nrel_sc_text_translation',
-    'rrel_example',
-    'nrel_osm_query',
-    'ui_menu_file_for_finding_persons'
+    'factory',
+    'farm'
 ];
 
 MapKeynodes.init = function () {
