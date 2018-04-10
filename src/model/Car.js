@@ -3,6 +3,10 @@ import {doStructsRequest, mapConstructs, readLinks} from "../ConstrQueriesUtils"
 import _ from "underscore";
 import * as L from "leaflet";
 
+/**
+ * Поиск sc-конструкций
+ * http://ostis-dev.github.io/sc-machine/net/sctp/  (#Итерирование сложных конструкций)
+ */
 function carsQuery() {
     return [
         SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_5F_A_A_A_F, [
@@ -54,11 +58,15 @@ async function emptyObjectOnReject(func, args) {
     }
 }
 
+/**
+ * Поиск всех машинок в БЗ
+ * @returns {Promise.<void>}
+ */
 // () => ScContrrResult<{freight_transport: sc_addr, ltd: sc_addr, coordinates: [number, number}>
 export async function queryForCars() {
     const carInstanceAddresses = await doStructsRequest(carsQuery(), mapConstructs(["freight_transport_instance", "ltd"]));
     let carStates = await emptyObjectOnReject(doStructsRequest,[carsStateQuery(), mapConstructs(["freight_transport_instance"])]);
-    carStates = _.map(carStates, _.property("freight_transport_instance"))
+    carStates = _.map(carStates, _.property("freight_transport_instance"));
     carStates = _.object(carStates, carStates);
     const linksAddresses = carInstanceAddresses.map(_.property("ltd"));
     const linksContent = await readLinks(linksAddresses);
@@ -70,6 +78,10 @@ export async function queryForCars() {
         .map((options) => new Car(options));
 }
 
+/**
+ * Создается специфический маркер для машинки на карте
+ * http://leafletjs.com/examples/custom-icons/
+ */
 const carIcons = {
     error: "/static/components/js/logistic-map/images/car-error.png",
     normal: "/static/components/js/logistic-map/images/car-normal.png"

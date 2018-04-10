@@ -7,6 +7,9 @@ function pushObjects(updater, objects) {
     return updater.set(update(updater.props, {objects: {$push: objects}}));
 }
 
+/**
+ * https://github.com/facebook/flux/tree/master/examples/flux-concepts
+ */
 export const MapStore = {
     get: function () {
         this.store = this.store || this.create();

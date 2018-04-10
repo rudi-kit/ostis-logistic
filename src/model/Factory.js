@@ -2,6 +2,10 @@ import {MapKeynodes} from "../keynodes.js";
 import {doStructsRequest, mapConstructs, readLinks} from "../ConstrQueriesUtils";
 import _ from "underscore"
 
+/**
+ * Поиск sc-конструкций
+ * http://ostis-dev.github.io/sc-machine/net/sctp/  (#Итерирование сложных конструкций)
+ */
 function factoriesQuery() {
     return [
         SctpConstrIter(SctpIteratorType.SCTP_ITERATOR_3F_A_A, [

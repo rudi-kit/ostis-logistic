@@ -1,5 +1,11 @@
+/**
+ * Получает и хранит адресса клучевых sc-узлов
+ */
 export const MapKeynodes = {};
 
+/**
+ * Список системных идентификаторов
+ */
 MapKeynodes.IDENTIFIERS = [
     'freight_transport',
     'nrel_inclusion',

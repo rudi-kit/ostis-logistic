@@ -2,6 +2,9 @@ import L from "leaflet";
 import React from "react";
 import _ from "underscore";
 
+/**
+ * Представляет оболочку для картографического компонента из библиотеки leaflet
+ */
 export class Map extends React.Component {
 
     createMap() {
@@ -24,6 +27,7 @@ export class Map extends React.Component {
         let markersGroup = L.featureGroup(markers)
             .on("add", () => this._bindMarkersToContextMenu(markers, notEmptyObjects.map(_.property("scAddress"))))
             .addTo(this.map);
+        //делает, что бы все маркеры попали на экран
         markers.length && this.map.fitBounds(markersGroup.getBounds());
     }
 
