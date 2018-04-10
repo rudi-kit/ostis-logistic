@@ -1,37 +1,25 @@
 var path = require("path");
+
 module.exports = {
     entry: {
-        app: ["./map/src/map_component.js"]
+        app: ["./index.js"]
     },
     output: {
-        path: __dirname+"/map/static/components/js/map",
-        publicPath: "/assets/",
-        filename: "map.js",
-        sourceMapFilename: "bundle.map"
-    },
-    devServer: {
-        proxy: [
-            {
-                context: ["/api", "/static", "/"],
-                target: "http://localhost:8000",
-                secure: false
-            },
-            {
-                context: ["/sctp"],
-                target: "http://localhost:8000",
-                secure: false,
-                ws: true
-            }
-
-        ],
-        inline: true,
-        hot: true
+        path: __dirname + "/dist",
+        filename: "map.js"
     },
     module: {
         loaders: [
             {test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/},
             {test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/},
-            {test: /\.css$/, loader: 'css-loader', exclude: /node_modules/}
+            {test: /\.css$/, loaders: ['style-loader', 'css-loader']},
+            {
+                test: /\.(png|jpg|gif)$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 8192
+                }
+            }
         ],
     },
     devtool: "cheap-eval-source-map",

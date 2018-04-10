@@ -23,6 +23,7 @@ export const MapStore = {
                 initObjects: function (updater) {
                     Promise.all([MapUtils.extractCars(), MapUtils.extractFactories(), MapUtils.extractFarms()])
                         .then(_.flatten)
+                        .then(_.compact)
                         .then(objects => (console.log(objects), objects))
                         .then(pushObjects.bind(null, updater))
                         .catch(console.error);

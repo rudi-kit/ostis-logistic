@@ -71,8 +71,8 @@ export async function queryForCars() {
 }
 
 const carIcons = {
-    error: "/static/components/images/car-error.png",
-    normal: "/static/components/images/car-normal.png"
+    error: "/static/components/js/logistic-map/images/car-error.png",
+    normal: "/static/components/js/logistic-map/images/car-normal.png"
 }
 
 export class Car {

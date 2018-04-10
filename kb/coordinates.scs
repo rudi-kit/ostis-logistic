@@ -1,5 +1,5 @@
 gaz_one
-    => nrel_ltd: [53.096067, 24.841031];;
+    => nrel_ltd: [52.1923464, 23.9983677];;
 
 gaz_two
     => nrel_ltd: [52.265865, 23.967364];;
@@ -19,3 +19,5 @@ vasilishki_farm
 ruzhany_agro_farm
     => nrel_ltd: [52.8609008, 24.8910599];;
 
+savushkin_product_factory
+    => nrel_ltd: [52.1128306, 23.7650608];;

@@ -4,11 +4,6 @@ import PropTypes from "prop-types"
 import {Map} from "./map.jsx"
 
 export class MapInterface extends React.Component {
-    propTypes: {
-        questions: PropTypes.array,
-        store: PropTypes.object
-    };
-
     constructor() {
         super();
         this.state = {

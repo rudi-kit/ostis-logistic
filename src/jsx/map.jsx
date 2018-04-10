@@ -1,20 +1,8 @@
-import createClass from "create-react-class"
-import PropTypes from "prop-types"
-import L from "leaflet"
-import {MapUtils} from "../utils"
-import React from "react"
-import _ from "underscore"
-import {cities} from "../data";
-import mapCss from "../../static/components/css/map.css"
+import L from "leaflet";
+import React from "react";
+import _ from "underscore";
 
 export class Map extends React.Component {
-    static propTypes: {
-        objects: PropTypes.array.isRequired,
-    };
-
-    static defaultProps: {
-        objects: []
-    };
 
     createMap() {
         this.map = new L.Map('map', {zoomControl: false});
@@ -25,7 +13,7 @@ export class Map extends React.Component {
 
     _bindMarkersToContextMenu(markers, sc_addrs) {
         const marker2address = _.zip(markers, sc_addrs);
-        const filtered = _.filter(marker2address, _.property(1))
+        const filtered = _.filter(marker2address, _.property(1));
         filtered.forEach(([marker, scAddress]) => marker.getElement().setAttribute("sc_addr", scAddress))
     }
 
