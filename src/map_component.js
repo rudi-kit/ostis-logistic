@@ -4,7 +4,6 @@ import {MapInterface} from "./view/map_interface.jsx"
 import fluxify from "fluxify";
 import ReactDOM from "react-dom"
 import React from "react"
-import {cars, cities} from "./data.js"
 
 const MapComponent = {
     ext_lang: 'openstreetmap_view',

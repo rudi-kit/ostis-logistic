@@ -1,4 +1,3 @@
-import "leaflet/dist/leaflet.css";
 import "./resources/css/map.css"
 
 import L from "leaflet";
